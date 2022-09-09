@@ -19,6 +19,23 @@ describe('unit/AdminRole', () => {
     context = await loadFixture(adminRoleMockFixture);
   });
 
+  describe('#initialize', () => {
+    let subject: (_account: Wallet | string) => Promise<any>;
+
+    beforeEach(() => {
+      subject = (_account: Wallet | string) =>
+        context.adminRole.initialize([typeof _account == 'string' ? _account : _account.address]);
+    });
+
+    describe('fails when', () => {
+      it('try to initialize a second time', async () => {
+        for (const acc of context.admins) {
+          await expect(subject(acc)).to.be.reverted;
+        }
+      });
+    });
+  });
+
   describe('#isAdmin', () => {
     let subject: (_account: Wallet | string) => Promise<any>;
 
@@ -27,7 +44,7 @@ describe('unit/AdminRole', () => {
         context.adminRole.isAdmin(typeof _account == 'string' ? _account : _account.address);
     });
 
-    describe('works and', () => {
+    describe('works', () => {
       it('returns true for admin addresses', async () => {
         for (const acc of context.admins) {
           expect(await subject(acc)).to.be.true;
