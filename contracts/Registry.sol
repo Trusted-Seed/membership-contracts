@@ -8,19 +8,14 @@ import "./lib/AdminRole.sol";
 
 // TODO: add IMinter.sol
 // TODO: add IRegistry.sol
+import "./interfaces/IRegistry.sol";
 
-contract Registry is AdminRole {
+contract Registry is IRegistry, AdminRole {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     //
     // STORAGE:
     //
-
-    struct Contributor {
-        address account;
-        uint256 maxTrust; // TODO: check type size
-        uint256 balance;
-    }
 
     // EnumerableSet of all trusted accounts:
     EnumerableSet.AddressSet internal accounts;
@@ -47,7 +42,7 @@ contract Registry is AdminRole {
     /// @param _admins (address[]) List of admins for the Registry contract.
     /// @param _tokenContract (address) CS token deployed contract address
     function initialize(address[] calldata _admins, address _tokenContract)
-        public
+        external
         initializer
     {
         __AdminRole_init(_admins);
@@ -106,66 +101,6 @@ contract Registry is AdminRole {
         Contributor storage contributor = contributors[_adr];
         emit PendingBalanceCleared(_adr, contributor.balance);
         contributor.balance = 0;
-    }
-
-    //
-    // INTERNAL FUNCTIONS:
-    //
-
-    function _register(Contributor calldata _contributor) internal {
-        address account = _contributor.account;
-        uint256 maxTrust = _contributor.maxTrust;
-        uint256 balance = _contributor.balance;
-
-        if (maxTrust == 0) revert MaxTrustMustBeNonZero();
-        if (account == address(0)) revert AddressMustBeNonZero();
-        if (!accounts.add(account)) revert AccountAlreadyRegistered();
-        // TODO: check if balance should be added and not overwritten
-        contributors[account] = Contributor(account, maxTrust, balance);
-
-        emit ContributorAdded(account);
-    }
-
-    /// @notice Register a list of contributors with max trust amounts.
-    /// @dev Can only be called by Admin role.
-    /// @param _contributors (Contributor[] calldata) Number of contributors to add
-    function registerContributors(Contributor[] calldata _contributors)
-        external
-        onlyAdmin
-    {
-        uint256 length = _contributors.length;
-        for (uint256 i = 0; i < length; ) {
-            _register(_contributors[i]);
-            unchecked {
-                i++;
-            }
-        }
-    }
-
-    function _remove(address _adr) internal {
-        if (!accounts.remove(_adr)) revert AccountNotRegistered();
-        delete contributors[_adr];
-        emit ContributorRemoved(_adr);
-    }
-
-    function _setPendingBalance(address _adr, uint256 _pendingBalance)
-        internal
-    {
-        if (!accounts.contains(_adr)) revert AccountNotRegistered();
-        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
-
-        contributors[_adr].balance = _pendingBalance;
-
-        emit PendingBalanceSet(_adr, _pendingBalance);
-    }
-
-    function _addPendingBalance(address _adr, uint256 _value) internal {
-        if (!accounts.contains(_adr)) revert AccountNotRegistered();
-        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
-
-        contributors[_adr].balance += _value;
-
-        emit PendingBalanceRise(_adr, _value);
     }
 
     //
@@ -257,6 +192,66 @@ contract Registry is AdminRole {
     }
 
     //
+    // INTERNAL FUNCTIONS:
+    //
+
+    function _register(Contributor calldata _contributor) internal {
+        address account = _contributor.account;
+        uint256 maxTrust = _contributor.maxTrust;
+        uint256 balance = _contributor.balance;
+
+        if (maxTrust == 0) revert MaxTrustMustBeNonZero();
+        if (account == address(0)) revert AddressMustBeNonZero();
+        if (!accounts.add(account)) revert AccountAlreadyRegistered();
+        // TODO: check if balance should be added and not overwritten
+        contributors[account] = Contributor(account, maxTrust, balance);
+
+        emit ContributorAdded(account);
+    }
+
+    /// @notice Register a list of contributors with max trust amounts.
+    /// @dev Can only be called by Admin role.
+    /// @param _contributors (Contributor[] calldata) Number of contributors to add
+    function registerContributors(Contributor[] calldata _contributors)
+        external
+        onlyAdmin
+    {
+        uint256 length = _contributors.length;
+        for (uint256 i = 0; i < length; ) {
+            _register(_contributors[i]);
+            unchecked {
+                i++;
+            }
+        }
+    }
+
+    function _remove(address _adr) internal {
+        if (!accounts.remove(_adr)) revert AccountNotRegistered();
+        delete contributors[_adr];
+        emit ContributorRemoved(_adr);
+    }
+
+    function _setPendingBalance(address _adr, uint256 _pendingBalance)
+        internal
+    {
+        if (!accounts.contains(_adr)) revert AccountNotRegistered();
+        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
+
+        contributors[_adr].balance = _pendingBalance;
+
+        emit PendingBalanceSet(_adr, _pendingBalance);
+    }
+
+    function _addPendingBalance(address _adr, uint256 _value) internal {
+        if (!accounts.contains(_adr)) revert AccountNotRegistered();
+        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
+
+        contributors[_adr].balance += _value;
+
+        emit PendingBalanceRise(_adr, _value);
+    }
+
+    //
     // EVENTS:
     //
 
@@ -284,7 +279,7 @@ contract Registry is AdminRole {
     //
     // ERRORS:
     //
-    
+
     error SenderMustBeMinter();
     error MaxTrustMustBeNonZero();
     error AddressMustBeNonZero();
