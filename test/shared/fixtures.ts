@@ -3,9 +3,9 @@ import { ethers, waffle } from 'hardhat';
 import { Fixture } from 'ethereum-waffle';
 
 import {
-  AdminRole,
+  AdminRoleMock,
   // Registry,
-  AdminRole__factory,
+  AdminRoleMock__factory,
   // TestERC20__factory,
   // TestMintable__factory,
   // Registry__factory,
@@ -21,14 +21,14 @@ import { toAddr } from './toAddr';
 
 const { parseEther } = ethers.utils;
 
-const { abi: AdminRoleMockABI, bytecode: AdminRoleMockBytecode } = AdminRole__factory;
+const { abi: AdminRoleMockABI, bytecode: AdminRoleMockBytecode } = AdminRoleMock__factory;
 // const { abi: RegistryABI, bytecode: RegistryBytecode } = Registry__factory;
 // const { abi: TestMintableABI, bytecode: TestMintableBytecode } = TestMintable__factory;
 // const { abi: TestERC20ABI, bytecode: TestERC20Bytecode } = TestERC20__factory;
 // const { abi: TestMinterABI, bytecode: TestMinterBytecode } = TestNoopMinter__factory;
 
 export type AdminRoleMockFixture = {
-  adminRole: AdminRole;
+  adminRole: AdminRoleMock;
   admins: string[];
 };
 
@@ -41,7 +41,7 @@ export const adminRoleMockFixture: Fixture<AdminRoleMockFixture> = async ([walle
       bytecode: AdminRoleMockBytecode,
       abi: AdminRoleMockABI,
     }
-  )) as AdminRole;
+  )) as AdminRoleMock;
 
   await adminRole.initialize(admins);
   return {
