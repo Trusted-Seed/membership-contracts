@@ -16,7 +16,7 @@ contract AdminRole is Initializable, OwnableUpgradeable {
      * Deployer address is an admin by default.
      * @param _accounts An optional list of admin addresses.
      */
-    function initialize(address[] calldata _accounts) public initializer {
+    function initialize(address[] calldata _accounts) public virtual initializer {
         __Ownable_init();
         _addAdmins(_accounts);
     }
@@ -70,6 +70,7 @@ contract AdminRole is Initializable, OwnableUpgradeable {
      * @param _account The address to receive Admin role
      */
     function _addAdmin(address _account) internal {
+        if (_account == address(0)) revert ZeroAddressNotAllowed();
         if (admins[_account]) revert AccountIsAlreadyAdmin();
         admins[_account] = true;
         emit AdminAdded(_account);
@@ -112,4 +113,5 @@ contract AdminRole is Initializable, OwnableUpgradeable {
     error CallerIsNoAdmin();
     error AccountIsAlreadyAdmin();
     error AccountIsNotAdmin();
+    error ZeroAddressNotAllowed();
 }

@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import { SolcUserConfig } from "hardhat/types";
+import "@nomiclabs/hardhat-waffle";
 import "@nomicfoundation/hardhat-toolbox";
 import 'hardhat-contract-sizer';
 import 'solidity-coverage';
