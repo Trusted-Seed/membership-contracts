@@ -7,7 +7,6 @@ import {IERC20Upgradeable as IERC20} from "@openzeppelin/contracts-upgradeable/t
 import "./lib/AdminRole.sol";
 
 // TODO: add IMinter.sol
-// TODO: add IRegistry.sol
 import "./interfaces/IRegistry.sol";
 
 contract Registry is IRegistry, AdminRole {
