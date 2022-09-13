@@ -11,6 +11,7 @@
     "hardhat": "^2.11.1",
     "hardhat-contract-sizer": "^2.6.1",
     "mocha-chai-jest-snapshot": "^1.1.4",
+    "prompts": "^2.4.2",
     "solidity-coverage": "^0.7.21"
   },
   "dependencies": {

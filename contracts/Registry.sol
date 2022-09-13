@@ -5,8 +5,6 @@ import {EnumerableSetUpgradeable as EnumerableSet} from "@openzeppelin/contracts
 import {IERC20Upgradeable as IERC20} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 import "./lib/AdminRole.sol";
-
-// TODO: add IMinter.sol
 import "./interfaces/IRegistry.sol";
 
 contract Registry is IRegistry, AdminRole {
