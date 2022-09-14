@@ -3,7 +3,7 @@ pragma solidity 0.8.13;
 
 import '../interfaces/IMintable.sol';
 
-contract MinableMock is IMintable {
+contract MintableMock is IMintable {
     address public lastCaller;
     address public lastReceiver;
     uint256 public lastAmount;
