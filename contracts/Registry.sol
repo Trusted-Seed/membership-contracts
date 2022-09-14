@@ -18,7 +18,7 @@ contract Registry is IRegistry, AdminRole {
     EnumerableSet.AddressSet internal accounts;
 
     // stoken contract
-    IERC20 internal tokenContract;
+    IERC20 public tokenContract;
 
     // Minter contract address
     address public minterContract;
@@ -137,14 +137,15 @@ contract Registry is IRegistry, AdminRole {
     function setTokenContract(address _tokenContract) external onlyAdmin {
         if (_tokenContract == address(0)) revert AddressMustBeNonZero();
         tokenContract = IERC20(_tokenContract);
+        emit TokenContractSet(_tokenContract);
     }
 
     /// @notice Set a new minter contract
     /// @dev Can only be called by Admin role.
     /// @param _minterContract (address) New minter contract address
     function setMinterContract(address _minterContract) external onlyAdmin {
-        if (_minterContract == address(0)) revert AddressMustBeNonZero();
         minterContract = _minterContract;
+        emit MinterContractSet(_minterContract);
     }
 
     //
@@ -272,6 +273,9 @@ contract Registry is IRegistry, AdminRole {
 
     /// @dev Emit when minter contract address is set
     event MinterContractSet(address indexed adr);
+
+    /// @dev Emit when token contract address is set
+    event TokenContractSet(address indexed adr);
 
     //
     // ERRORS:
