@@ -7,12 +7,13 @@ import {
   Registry,
   AdminRoleMock__factory,
   ERC20Mock__factory,
-  // TestMintable__factory,
+  MintableMock__factory,
   Registry__factory,
   IERC20Upgradeable,
-  // TestNoopMinter__factory,
-  // IMintable,
-  // IMinter,
+  NoopMinterMock__factory,
+  IMintable,
+  IMinter,
+  ERC20Mock,
 } from '../../typechain-types';
 
 import { ActorFixture } from './actors';
@@ -23,9 +24,9 @@ const { parseEther } = ethers.utils;
 
 const { abi: AdminRoleMockABI, bytecode: AdminRoleMockBytecode } = AdminRoleMock__factory;
 const { abi: RegistryABI, bytecode: RegistryBytecode } = Registry__factory;
-// const { abi: TestMintableABI, bytecode: TestMintableBytecode } = TestMintable__factory;
+const { abi: MintableMockABI, bytecode: MintableMockBytecode } = MintableMock__factory;
 const { abi: ERC20MockABI, bytecode: ERC20MockBytecode } = ERC20Mock__factory;
-// const { abi: TestMinterABI, bytecode: TestMinterBytecode } = TestNoopMinter__factory;
+const { abi: MinterMockABI, bytecode: MinterMockBytecode } = NoopMinterMock__factory;
 
 export type AdminRoleMockFixture = {
   adminRole: AdminRoleMock;
@@ -51,7 +52,7 @@ export const adminRoleMockFixture: Fixture<AdminRoleMockFixture> = async ([walle
 };
 
 export type TokenFixture = {
-  token: IERC20Upgradeable;
+  token: ERC20Mock;
   params: {
     amountToMint: BigNumberish;
   };
@@ -68,9 +69,8 @@ export const tokenFixture: Fixture<TokenFixture> = async ([wallet]) => {
       bytecode: ERC20MockBytecode,
       abi: ERC20MockABI,
     },
-    [amountToMint]
-  )) as IERC20Upgradeable;
-
+  )) as ERC20Mock;
+    await token.initialize(amountToMint);
   return {
     token,
     params: {
@@ -82,10 +82,10 @@ export const tokenFixture: Fixture<TokenFixture> = async ([wallet]) => {
   };
 };
 
-export type RegistryContributor = {
-  address: string;
+export type Contributor = {
+  account: string;
   maxTrust: BigNumberish;
-  pendingBalance: BigNumberish;
+  balance: BigNumberish;
 };
 
 export type RegistryFixture = {
@@ -96,20 +96,15 @@ export type RegistryFixture = {
     tokenAddress: string;
   };
   state: {
-    pendingContributors: RegistryContributor[];
-    contributors: RegistryContributor[];
-    everyone: RegistryContributor[];
+    pendingContributors: Contributor[];
+    contributors: Contributor[];
+    everyone: Contributor[];
   };
 };
 
 export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
-  const registerContributors = async (_contributors: RegistryContributor[], _registry: Registry) => {
-    await _registry.registerContributors(
-      _contributors.length,
-      _contributors.map((c) => c.address),
-      _contributors.map((c) => c.maxTrust),
-      _contributors.map((c) => c.pendingBalance)
-    );
+  const registerContributors = async (_contributors: Contributor[], _registry: Registry) => {
+    await _registry.connect(actors.adminFirst()).registerContributors(_contributors);
   };
   const actors = new ActorFixture(provider.getWallets(), provider);
   const admins = [actors.adminFirst().address, actors.adminSecond().address];
@@ -121,34 +116,35 @@ export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
     {
       bytecode: RegistryBytecode,
       abi: RegistryABI,
-    },
-    [admins, token.address]
+    }
   )) as Registry;
 
-  const contributors = <RegistryContributor[]>[
+  await registry.initialize(admins, token.address);
+
+  const contributors = <Contributor[]>[
     {
-      address: toAddr(actors.contributorFirst()),
+      account: toAddr(actors.contributorFirst()),
       maxTrust: '1000',
-      pendingBalance: '0',
+      balance: '0',
     },
     {
-      address: toAddr(actors.contributorSecond()),
+      account: toAddr(actors.contributorSecond()),
       maxTrust: '2000',
-      pendingBalance: '0',
+      balance: '0',
     },
   ];
   await registerContributors(contributors, registry);
 
-  const pendingContributors = <RegistryContributor[]>[
+  const pendingContributors = <Contributor[]>[
     {
-      address: toAddr(actors.pendingContributorFirst()),
+      account: toAddr(actors.pendingContributorFirst()),
       maxTrust: '1000',
-      pendingBalance: '1000',
+      balance: '1000',
     },
     {
-      address: toAddr(actors.pendingContributorSecond()),
+      account: toAddr(actors.pendingContributorSecond()),
       maxTrust: '2000',
-      pendingBalance: '2000',
+      balance: '2000',
     },
   ];
   await registerContributors(pendingContributors, registry);
@@ -170,62 +166,65 @@ export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
   };
 };
 
-// export type MinterFixture = {
-//   minter: IMinter;
-//   token: IERC20Upgradeable;
-//   tokenManager: IMintable;
-//   params: {
-//     authorizedKeys: string[];
-//     tokenManagerAddress: string;
-//     registryAddress: string;
-//     tokenAddress: string;
-//   };
-//   state: {
-//     numerator: BigNumberish;
-//     denominator: BigNumberish;
-//   };
-// };
+export type MinterFixture = {
+  minter: IMinter;
+  token: IERC20Upgradeable;
+  tokenManager: IMintable;
+  params: {
+    owner: string;
+    bridge: string;
+    tokenManagerAddress: string;
+    registryAddress: string;
+    tokenAddress: string;
+  };
+  state: {
+    numerator: BigNumberish;
+    denominator: BigNumberish;
+  };
+};
 
-// export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
-//   const actors = new ActorFixture(provider.getWallets(), provider);
-//   const admins = [actors.adminFirst().address, actors.adminSecond().address];
+export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
+  const actors = new ActorFixture(provider.getWallets(), provider);
+  const owner = actors.adminFirst();
+  const bridge = actors.adminSecond();
 
-//   const { registry, token } = await registryFixture([wallet], provider);
+  const { registry, token } = await registryFixture([wallet], provider);
 
-//   const tokenManager = (await waffle.deployContract(wallet, {
-//     abi: TestMintableABI,
-//     bytecode: TestMintableBytecode,
-//   })) as IMintable;
+  const tokenManager = (await waffle.deployContract(wallet, {
+    abi: MintableMockABI,
+    bytecode: MintableMockBytecode,
+  })) as IMintable;
 
-//   const minter = (await waffle.deployContract(
-//     wallet,
-//     {
-//       abi: TestMinterABI,
-//       bytecode: TestMinterBytecode,
-//     },
-//     [admins, tokenManager.address, registry.address, token.address]
-//   )) as IMinter;
+  const minter = (await waffle.deployContract(
+    wallet,
+    {
+      abi: MinterMockABI,
+      bytecode: MinterMockBytecode,
+    },
+    [owner.address, bridge.address, tokenManager.address, registry.address, token.address]
+  )) as IMinter;
 
-//   const numerator = 500;
-//   const denominator = 1000;
-//   await minter.setRatio(numerator, denominator);
+  const numerator = 500;
+  const denominator = 1000;
+  await minter.connect(owner).setRatio(numerator, denominator);
+  
+  const membershupDues = parseEther('450');
+  await minter.connect(owner).setMembershipDues(membershupDues);
 
-//   const membershupDues = parseEther('450');
-//   await minter.setMembershipDues(membershupDues);
-
-//   return {
-//     minter,
-//     token,
-//     tokenManager: tokenManager,
-//     params: {
-//       authorizedKeys: admins,
-//       tokenManagerAddress: tokenManager.address,
-//       registryAddress: registry.address,
-//       tokenAddress: token.address,
-//     },
-//     state: {
-//       numerator,
-//       denominator,
-//     },
-//   };
-// };
+  return {
+    minter,
+    token,
+    tokenManager: tokenManager,
+    params: {
+      owner: owner.address,
+      bridge: bridge.address,
+      tokenManagerAddress: tokenManager.address,
+      registryAddress: registry.address,
+      tokenAddress: token.address,
+    },
+    state: {
+      numerator,
+      denominator,
+    },
+  };
+};
