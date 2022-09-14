@@ -4,13 +4,14 @@ pragma solidity 0.8.13;
 /// @title IMinter
 /// @notice Token minter interface
 interface IMinter {
-
-  function initialize(
+    function initialize(
+        address _owner,
         address _bridge,
         address _tokenManager,
         address _registry,
         address _tokenContract
     ) external;
+
     //// ADMIN FUNCTIONS:
 
     /// @notice Set the address of the token manager that mints the tokens.

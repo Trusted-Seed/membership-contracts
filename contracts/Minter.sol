@@ -32,12 +32,23 @@ contract Minter is Ownable, IMinter {
     }
 
     function initialize(
+        address _owner,
         address _bridge,
         address _tokenManager,
         address _registry,
         address _tokenContract
-    ) external initializer {
-        __Ownable_init();
+    ) external {
+        _initialize(_owner, _bridge, _tokenManager, _registry, _tokenContract);
+    }
+
+    function _initialize(
+        address _owner,
+        address _bridge,
+        address _tokenManager,
+        address _registry,
+        address _tokenContract
+    ) internal initializer {
+        _transferOwnership(_owner);
         bridge = _bridge;
         tokenManagerContract = _tokenManager;
         registryContract = IRegistry(_registry);
@@ -176,7 +187,7 @@ contract Minter is Ownable, IMinter {
     //
     // INTERNAL FUNCTIONS:
     //
-    function _mint(address recipient, uint256 amount) internal {
+    function _mint(address recipient, uint256 amount) internal virtual {
         uint256 toMint;
         // Get the max trust amount for the recipient acc from the Registry.
         uint256 maxTrust = registryContract.getMaxTrust(recipient);
