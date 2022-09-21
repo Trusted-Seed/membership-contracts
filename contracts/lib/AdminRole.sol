@@ -7,7 +7,7 @@ contract AdminRole is Initializable, OwnableUpgradeable {
     mapping(address => bool) public admins;
 
     modifier onlyAdmin() {
-        if (!admins[msg.sender]) revert CallerIsNoAdmin();
+        if (!admins[msg.sender] || msg.sender == owner()) revert CallerIsNoAdmin();
         _;
     }
 
