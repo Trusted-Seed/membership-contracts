@@ -13,11 +13,11 @@ type MinterInit = {
 }
 
 export const DEFAULT_PARAMS: MinterInit = {
-  owner: '0x185880E979FDEbFa1fab7e281510A01417681d55',
-  bridge: '0x185880E979FDEbFa1fab7e281510A01417681d55',
-  tokenManager: '0x185880E979FDEbFa1fab7e281510A01417681d55',
-  registry: '0x185880E979FDEbFa1fab7e281510A01417681d55',
-  tokenContract: '0x185880E979FDEbFa1fab7e281510A01417681d55',
+  owner: '0x1234....',
+  bridge: '0x1234....',
+  tokenManager: '0x1234....',
+  registry: '0x1234....',
+  tokenContract: '0x1234....',
 };
 
 export type MinterRatio = {
