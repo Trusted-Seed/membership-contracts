@@ -219,7 +219,7 @@ contract Registry is IRegistry, AdminRole {
         if (maxTrust == 0) revert MaxTrustMustBeNonZero();
         if (account == address(0)) revert AddressMustBeNonZero();
         if (!accounts.add(account)) revert AccountAlreadyRegistered();
-        // TODO: check if balance should be added and not overwritten
+
         contributors[account] = Contributor(account, maxTrust, balance);
 
         emit ContributorAdded(account);
