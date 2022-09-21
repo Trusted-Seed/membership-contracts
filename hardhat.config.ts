@@ -2,8 +2,11 @@ import { HardhatUserConfig } from "hardhat/config";
 import { SolcUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-waffle";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomiclabs/hardhat-etherscan";
+import "hardhat-deploy";
 import 'hardhat-contract-sizer';
 import 'solidity-coverage';
+import '@openzeppelin/hardhat-upgrades';
 import dotenv from 'dotenv';
 
 dotenv.config();

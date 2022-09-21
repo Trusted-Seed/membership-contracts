@@ -1,18 +1,20 @@
-import { ethers, network } from 'hardhat';
-import { log } from '../utils/logging';
 import dotenv from 'dotenv';
-import { getDefaultConstructionParams, getDefaultOwner, getDefaultRatio, MinterRatio } from './minter.config';
+import { ethers, network, upgrades } from 'hardhat';
+import { log } from '../utils/logging';
 import { confirmOK } from '../utils/prompt';
-import { Minter } from '../../typechain-types';
+import { getDefaultInitParams, getDefaultRatio, MinterRatio } from './minter.config';
+import { formatEther, getAddress } from 'ethers/lib/utils';
+import { Contract } from 'ethers';
 
-const { formatEther, getAddress } = ethers.utils;
+dotenv.config();
 
 const pretty = (obj: any) => JSON.stringify(obj, null, 4);
 
-const mustAuthorizedKey = async (minter: Minter, account: string) => {
-  log.info(`Checking if '${account}' is an authorized key...`);
-  if (!(await minter.isAdmin(account))) {
-    throw Error(`Expected ${account} to be set as an authorized key`);
+const promptForConfirmation = async () => {
+  const { ok } = await confirmOK();
+  if (!ok) {
+    log.info('\nOperation aborted, exiting...');
+    process.exit(0);
   }
 };
 
@@ -23,7 +25,7 @@ const mustMatchAddress = (name: string, expected: string, actual: string) => {
   }
 };
 
-const mustMatchRatio = async (minter: Minter, expected: MinterRatio) => {
+const mustMatchRatio = async (minter: Contract, expected: MinterRatio) => {
   log.info('Checking minter ratio');
   const num = await minter.numerator();
   const den = await minter.denominator();
@@ -36,23 +38,13 @@ const mustMatchRatio = async (minter: Minter, expected: MinterRatio) => {
   }
 };
 
-const promptForConfirmation = async () => {
-  const { ok } = await confirmOK();
-  if (!ok) {
-    log.info('\nOperation aborted, exiting...');
-    process.exit(0);
-  }
-};
 
-dotenv.config();
-
-const main = async () => {
+async function main() {
   const deployer = (await ethers.getSigners())[0];
   const balanceETH = await deployer.getBalance();
 
-  const params = getDefaultConstructionParams();
+  const params = getDefaultInitParams();
   const ratio = getDefaultRatio();
-  const newOwner = getDefaultOwner();
 
   log.info('\n');
   log.info('===============================');
@@ -68,7 +60,7 @@ const main = async () => {
   log.info(`Balance: ${formatEther(balanceETH)} ETH`);
   log.info(`\n`);
 
-  log.info('Construction parameters:');
+  log.info('Initialization parameters:');
   log.info(pretty(params));
   log.info('\n');
 
@@ -77,50 +69,37 @@ const main = async () => {
   log.info(`denominator: ${ratio.denominator.toString()}`);
   log.info('\n');
 
-  log.info('Contract ownership will be transferred to:');
-  log.info(`===> ${newOwner}`);
+  log.info('Contract owner:');
+  log.info(`===> ${params.owner}`);
   log.info('\n');
 
   await promptForConfirmation();
-
-  log.info('\n');
-  log.info('\n');
-  log.info('Started deployment of Minter');
-  log.info('============================\n');
-
-  const minterFactory = await ethers.getContractFactory('Minter');
-  const minter = (await minterFactory
-    .connect(deployer)
-    .deploy(params.authorizedKeys, params.tokenManager, params.registry, params.token)) as Minter;
+  const minterFactory = await ethers.getContractFactory("Minter");
+  const minter = await upgrades.deployProxy(
+    minterFactory,
+    [params.owner, params.bridge, params.tokenManager, params.registry, params.tokenContract]
+  );
   const { deployTransaction } = minter;
 
   log.info(`Deployment tx hash: ${deployTransaction.hash}`);
 
-  log.info('\n');
-  log.info('Waiting for confirmations..');
-
-  if (network.name !== 'hardhat') await deployTransaction.wait(2);
+  await minter.deployed();
 
   log.info('\n');
   log.info('Deployment OK');
   log.info('\n');
 
-  log.info('Minter deployed to:');
-  log.info(`===>  ${minter.address}`);
-
   log.info('\n');
   log.info('Checking deployed contract state:');
   log.info('\n');
 
-  for (const aKey of params.authorizedKeys) {
-    await mustAuthorizedKey(minter, aKey);
-  }
-
+  mustMatchAddress('Owner', params.owner, await minter.owner());
+  mustMatchAddress('Bridge', params.bridge, await minter.bridgeAddress());
   mustMatchAddress('TokenManager', params.tokenManager, await minter.tokenManager());
-  mustMatchAddress('Token', params.token, await minter.token());
   mustMatchAddress('Registry', params.registry, await minter.registry());
+  mustMatchAddress('TokenContract', params.tokenContract, await minter.token());
 
-  log.info('\nSetting inital ratio');
+  log.info('\nSetting initial ratio');
   log.info('====================\n');
 
   const setRatioTx = await minter.setRatio(ratio.numerator, ratio.denominator);
@@ -132,24 +111,19 @@ const main = async () => {
 
   log.info('\n');
   log.info('Ratio set OK');
-
-  log.info('\nTransferring contract ownership:');
-  log.info('================================');
-
-  const transferOwnershipTx = await minter.transferOwnership(newOwner);
-  log.info(`Transaction hash: ${transferOwnershipTx.hash}`);
-  log.info('Waiting for confirmations...');
-  if (network.name !== 'hardhat') await setRatioTx.wait(2);
-  log.info('Ownership transfer complete');
-
-  mustMatchAddress('Owner', newOwner, await minter.owner());
-
   log.info('\n');
-  log.info('Owner set OK');
-
+  let logic = await upgrades.erc1967.getImplementationAddress(minter.address);
+ 
+  console.log("Minter proxy deployed to:", minter.address);
+  console.log("Minter logic deployed to:", logic);
+  console.log("Minter admin deployed to:", await upgrades.erc1967.getAdminAddress(minter.address));
+ 
   log.info('\n');
   log.info('Deployment completed, GM!!');
-};
+  log.info('\n');
+  log.info('To verify, please run:');
+  log.info(`npx hardhat verify --network ${network.name} ${logic}`);
+}
 
 main().catch((e) => {
   log.error(e);
