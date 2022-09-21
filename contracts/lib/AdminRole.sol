@@ -84,7 +84,7 @@ contract AdminRole is Initializable, OwnableUpgradeable {
         uint256 length = _accounts.length;
         for (uint256 i = 0; i < length; ) {
             address account = _accounts[i];
-            if (account != msg.sender) {
+            if (account != msg.sender && !admins[account]) {
                 _addAdmin(account);
             }
             unchecked {
