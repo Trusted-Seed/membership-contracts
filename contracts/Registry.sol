@@ -175,6 +175,24 @@ contract Registry is IRegistry, AdminRole {
         return contributorList;
     }
 
+    /// @notice Returns whether an addresse is contributor or not.
+    /// @param _account (address) Address of the contributor
+    /// @return bool true if contributor, false if not contributor
+    function isContributor(address _account) external view returns (bool) {
+        return accounts.contains(_account);
+    }
+
+    /// @notice Return contributor information about a specific account.
+    /// @param _account (address) Address of the contributor
+    /// @return contributor (Contributor) Information of the contributor
+    function getContributor(address _account)
+        external
+        view
+        returns (Contributor memory)
+    {
+        return contributors[_account];
+    }
+
     /// @notice Return the max trust of an address, or 0 if the address is not a contributor.
     /// @param _adr (address) Address to check
     /// @return maxTrust (uint256) Max trust of the address, or 0 if not a contributor.
