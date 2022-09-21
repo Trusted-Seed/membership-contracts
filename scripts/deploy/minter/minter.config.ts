@@ -16,7 +16,7 @@ export type MinterRatio = {
 
 // ================ CHANGE THESE VALUES ================
 
-// owner of registry and admin contract (and therefore of proxy)
+// owner of minter and admin contract (and therefore of proxy)
 const DEFAULT_OWNER = '0x1234';
 
 export const DEFAULT_PARAMS: MinterInit = {
