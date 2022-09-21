@@ -1,29 +1,13 @@
 import dotenv from 'dotenv';
 import { ethers, network, upgrades } from 'hardhat';
-import { log } from '../utils/logging';
-import { confirmOK } from '../utils/prompt';
+import { log } from '../../utils/logging';
+import { promptForConfirmation } from '../../utils/prompt';
 import { getDefaultInitParams, getDefaultRatio, MinterRatio } from './minter.config';
-import { formatEther, getAddress } from 'ethers/lib/utils';
+import { formatEther } from 'ethers/lib/utils';
 import { Contract } from 'ethers';
+import { mustMatchAddress, pretty } from '../../utils/utils';
 
 dotenv.config();
-
-const pretty = (obj: any) => JSON.stringify(obj, null, 4);
-
-const promptForConfirmation = async () => {
-  const { ok } = await confirmOK();
-  if (!ok) {
-    log.info('\nOperation aborted, exiting...');
-    process.exit(0);
-  }
-};
-
-const mustMatchAddress = (name: string, expected: string, actual: string) => {
-  log.info(`Checking ${name} address...`);
-  if (getAddress(expected) !== getAddress(actual)) {
-    throw Error(`Expected ${name} value ${expected}, got ${actual}`);
-  }
-};
 
 const mustMatchRatio = async (minter: Contract, expected: MinterRatio) => {
   log.info('Checking minter ratio');
@@ -37,7 +21,6 @@ const mustMatchRatio = async (minter: Contract, expected: MinterRatio) => {
     throw Error(`Expected denominator to be eq ${expected.denominator}, got ${den}`);
   }
 };
-
 
 async function main() {
   const deployer = (await ethers.getSigners())[0];
@@ -103,8 +86,10 @@ async function main() {
   log.info('====================\n');
 
   const setRatioTx = await minter.setRatio(ratio.numerator, ratio.denominator);
+ 
   log.info(`Transaction hash '${setRatioTx.hash}'`);
   log.info('Waiting for confirmations...');
+
   if (network.name !== 'hardhat') await setRatioTx.wait(2);
 
   await mustMatchRatio(minter, ratio);
@@ -112,6 +97,7 @@ async function main() {
   log.info('\n');
   log.info('Ratio set OK');
   log.info('\n');
+
   let logic = await upgrades.erc1967.getImplementationAddress(minter.address);
  
   console.log("Minter proxy deployed to:", minter.address);
