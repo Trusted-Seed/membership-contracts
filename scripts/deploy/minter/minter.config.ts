@@ -1,8 +1,6 @@
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-
-const { AddressZero } = ethers.constants;
-const { isAddress } = ethers.utils;
+import { checkAddress } from '../../utils/utils';
 
 type MinterInit = {
   owner: string;
@@ -29,8 +27,6 @@ export const DEFAULT_RATIO = {
   numerator: BigNumber.from('5'),
   denominator: BigNumber.from('2000000000000000000'),
 };
-
-const checkAddress = (addr: string) => isAddress(addr) && addr !== AddressZero;
 
 export const checkInitParams = (p: MinterInit) => {
   if (!checkAddress(p.owner)) {
