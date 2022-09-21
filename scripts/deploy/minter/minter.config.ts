@@ -1,5 +1,4 @@
 import { BigNumber } from 'ethers';
-import { ethers } from 'hardhat';
 import { checkAddress } from '../../utils/utils';
 
 type MinterInit = {
@@ -10,23 +9,30 @@ type MinterInit = {
   tokenContract: string;
 }
 
-export const DEFAULT_PARAMS: MinterInit = {
-  owner: '0x1234....',
-  bridge: '0x1234....',
-  tokenManager: '0x1234....',
-  registry: '0x1234....',
-  tokenContract: '0x1234....',
-};
-
 export type MinterRatio = {
   numerator: BigNumber;
   denominator: BigNumber;
+};
+
+// ================ CHANGE THESE VALUES ================
+
+// owner of registry and admin contract (and therefore of proxy)
+const DEFAULT_OWNER = '0x1234';
+
+export const DEFAULT_PARAMS: MinterInit = {
+  owner: DEFAULT_OWNER,
+  bridge: '0x1234',
+  tokenManager: '0x1234',
+  registry: '0x1234',
+  tokenContract: '0x1234',
 };
 
 export const DEFAULT_RATIO = {
   numerator: BigNumber.from('5'),
   denominator: BigNumber.from('2000000000000000000'),
 };
+
+// ================ /CHANGE THESE VALUES ================
 
 export const checkInitParams = (p: MinterInit) => {
   if (!checkAddress(p.owner)) {
@@ -64,3 +70,10 @@ export const getDefaultRatio = () => {
   checkRatio(DEFAULT_RATIO);
   return DEFAULT_RATIO;
 };
+
+export const getDefaultOwner = () => {
+  if (!checkAddress(DEFAULT_OWNER)) {
+    throw new Error('Owner address invalid');
+  }
+  return DEFAULT_OWNER;
+}
