@@ -1,9 +1,9 @@
-import { provider } from './provider';
+import { provider } from './provider'
 
-export const blockTimestamp = async () => {
-  const block = await provider.getBlock('latest');
+export const blockTimestamp = async (): Promise<number> => {
+  const block = await provider.getBlock('latest')
   if (!block) {
-    throw new Error('null block returned from provider');
+    throw new Error('null block returned from provider')
   }
-  return block.timestamp;
-};
+  return block.timestamp
+}

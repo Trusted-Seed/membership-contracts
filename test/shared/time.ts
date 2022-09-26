@@ -1,1 +1,1 @@
-export const days = (n: number) => 86_400 * n;
+export const days = (n: number): number => 86_400 * n
