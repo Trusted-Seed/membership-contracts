@@ -2,7 +2,7 @@ import prompts from "prompts";
 import { log } from "./logging";
 
 export const confirmOK = async (): Promise<any> =>
-  await prompts({
+  prompts({
     type: "confirm",
     name: "ok",
     message: "Are you sure you want to proceed?",

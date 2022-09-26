@@ -1,6 +1,6 @@
 import { MockProvider } from "ethereum-waffle";
 import { BigNumber, Wallet } from "ethers";
-import { TestERC20 } from "../../typechain-types";
+import { TestERC20 } from "../../typechain";
 import { ActorFixture, arrayWrap } from "../shared";
 
 /**

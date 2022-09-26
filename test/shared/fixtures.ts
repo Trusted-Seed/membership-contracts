@@ -14,7 +14,7 @@ import {
   IMintable,
   IMinter,
   ERC20Mock,
-} from "../../typechain-types";
+} from "../../typechain";
 
 import { ActorFixture } from "./actors";
 import { provider } from "./provider";
