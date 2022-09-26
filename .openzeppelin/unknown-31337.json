@@ -2,19 +2,19 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "txHash": "0x72191d80567b08f145a715b44b2a6fbff6f0754b8dfc1535cafcd3aa4e40983f"
+    "txHash": "0x2b6538ddac4fd5d774ece2c1dc42c15aa62c56a3a8c060d187a6058a71aae79c"
   },
   "proxies": [
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0xc33a30b9f0869681270a16d4927be3d8daf4170b45a345d1ac0a71cfdafb18b6",
+      "txHash": "0xc8dce331b9742cdd1543e876f7e84c98f7902e33382a13f0e6f2201ac8fd7dc6",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "516cbab48f802505c0e624bc9735cf50fde612e60d7abdeadca83dfacbbb41c5": {
+    "d2a114890454a4c032703e55656093db78155eea38f1aa5a9e5e3c2f52c98828": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x1471ed9faff3d8167350627fe526cf61e19790dbe803559d9cef3bc6e4c2f47b",
+      "txHash": "0xc7af4be63607128085e525c1a9bef27fc2c250fa8674537a6bacb0359fed2e04",
       "layout": {
         "storage": [
           {
@@ -59,66 +59,54 @@
             "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
           },
           {
-            "label": "registryContract",
+            "label": "admins",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(IRegistry)1441",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:19"
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "AdminRole",
+            "src": "contracts/lib/AdminRole.sol:7"
+          },
+          {
+            "label": "accounts",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_struct(AddressSet)1593_storage",
+            "contract": "Registry",
+            "src": "contracts/Registry.sol:18"
           },
           {
             "label": "tokenContract",
             "offset": 0,
-            "slot": "102",
-            "type": "t_contract(IERC20Upgradeable)360",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:20"
-          },
-          {
-            "label": "bridge",
-            "offset": 0,
-            "slot": "103",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:22"
-          },
-          {
-            "label": "tokenManagerContract",
-            "offset": 0,
             "slot": "104",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:23"
+            "type": "t_contract(IERC20Upgradeable)971",
+            "contract": "Registry",
+            "src": "contracts/Registry.sol:21"
           },
           {
-            "label": "membershipDuesVal",
+            "label": "minterContract",
             "offset": 0,
             "slot": "105",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:25"
+            "type": "t_address",
+            "contract": "Registry",
+            "src": "contracts/Registry.sol:24"
           },
           {
-            "label": "numeratorVal",
+            "label": "contributors",
             "offset": 0,
             "slot": "106",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:26"
-          },
-          {
-            "label": "denominatorVal",
-            "offset": 0,
-            "slot": "107",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/Minter.sol:27"
+            "type": "t_mapping(t_address,t_struct(Contributor)3248_storage)",
+            "contract": "Registry",
+            "src": "contracts/Registry.sol:27"
           }
         ],
         "types": {
           "t_address": {
             "label": "address",
             "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]",
@@ -132,13 +120,79 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IERC20Upgradeable)360": {
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)971": {
             "label": "contract IERC20Upgradeable",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistry)1441": {
-            "label": "contract IRegistry",
-            "numberOfBytes": "20"
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Contributor)3248_storage)": {
+            "label": "mapping(address => struct IRegistry.Contributor)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)1593_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)1292_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Contributor)3248_storage": {
+            "label": "struct IRegistry.Contributor",
+            "members": [
+              {
+                "label": "account",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "maxTrust",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "balance",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(Set)1292_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
           },
           "t_uint256": {
             "label": "uint256",
