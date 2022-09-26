@@ -1,15 +1,15 @@
-import createLogger, { LogLevelNames } from 'console-log-level'
+import createLogger, { LogLevelNames } from "console-log-level";
 
 const processEnvLogLevel = (lvl: string | undefined): LogLevelNames => {
   switch (lvl) {
-    case 'info':
-    case 'debug':
-    case 'error':
-      return lvl
+    case "info":
+    case "debug":
+    case "error":
+      return lvl;
     default:
-      return 'info'
+      return "info";
   }
-}
+};
 
-export const LOG_LEVEL = processEnvLogLevel(process.env.LOG_LEVEL)
-export const log = createLogger({ level: LOG_LEVEL })
+export const LOG_LEVEL = processEnvLogLevel(process.env.LOG_LEVEL);
+export const log = createLogger({ level: LOG_LEVEL });

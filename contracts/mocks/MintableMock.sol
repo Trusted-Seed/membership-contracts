@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.13;
 
-import '../interfaces/IMintable.sol';
+import "../interfaces/IMintable.sol";
 
 contract MintableMock is IMintable {
     address public lastCaller;

@@ -1,3 +1,3 @@
-import { createFixtureLoader } from 'ethereum-waffle'
+import { createFixtureLoader } from "ethereum-waffle";
 
-export type LoadFixtureFunction = ReturnType<typeof createFixtureLoader>
+export type LoadFixtureFunction = ReturnType<typeof createFixtureLoader>;

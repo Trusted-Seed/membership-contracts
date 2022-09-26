@@ -1,5 +1,5 @@
-import { MockProvider } from 'ethereum-waffle'
-import { Wallet } from 'ethers'
+import { MockProvider } from "ethereum-waffle";
+import { Wallet } from "ethers";
 
 // User indexes:
 export const WALLET_USER_INDEXES = {
@@ -16,106 +16,109 @@ export const WALLET_USER_INDEXES = {
   DRAIN_VAULT_RECEIVER: 0,
   ESCAPE_HATCH_CALLER: 0,
   ESCAPE_HATCH_DESTINATION: 0,
-  OTHER: 10
-}
+  OTHER: 10,
+};
 
 export class ActorFixture {
-  wallets: Wallet[]
-  provider: MockProvider
+  wallets: Wallet[];
+  provider: MockProvider;
 
-  constructor (wallets: Wallet[], provider: MockProvider) {
-    this.wallets = wallets
-    this.provider = provider
+  constructor(wallets: Wallet[], provider: MockProvider) {
+    this.wallets = wallets;
+    this.provider = provider;
   }
 
-  owner (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.OWNER)
+  owner(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.OWNER);
   }
 
-  tokenManager (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.TOKEN_MANAGER)
+  tokenManager(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.TOKEN_MANAGER);
   }
 
-  deployer (): Wallet {
-    return this.owner()
+  deployer(): Wallet {
+    return this.owner();
   }
 
-  adminFirst (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ADMIN_FIRST)
+  adminFirst(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ADMIN_FIRST);
   }
 
-  adminSecond (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ADMIN_SECOND)
+  adminSecond(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ADMIN_SECOND);
   }
 
-  adminThird (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ADMIN_THIRD)
+  adminThird(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ADMIN_THIRD);
   }
 
-  adminFourth (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ADMIN_FOURTH)
+  adminFourth(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ADMIN_FOURTH);
   }
 
-  contributorFirst (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.MEMEBER_FIRST)
+  contributorFirst(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.MEMEBER_FIRST);
   }
 
-  contributorSecond (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.MEMEBER_SECOND)
+  contributorSecond(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.MEMEBER_SECOND);
   }
 
-  contributors (): Wallet[] {
-    return [this.contributorFirst(), this.contributorSecond()]
+  contributors(): Wallet[] {
+    return [this.contributorFirst(), this.contributorSecond()];
   }
 
-  pendingContributorFirst (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.PENDING_MEMBER_FIRST)
+  pendingContributorFirst(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.PENDING_MEMBER_FIRST);
   }
 
-  pendingContributorSecond (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.PENDING_MEMBER_SECOND)
+  pendingContributorSecond(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.PENDING_MEMBER_SECOND);
   }
 
-  pendingContributors (): Wallet[] {
-    return [this.pendingContributorFirst(), this.pendingContributorSecond()]
+  pendingContributors(): Wallet[] {
+    return [this.pendingContributorFirst(), this.pendingContributorSecond()];
   }
 
-  drainVaultReceiver (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.DRAIN_VAULT_RECEIVER)
+  drainVaultReceiver(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.DRAIN_VAULT_RECEIVER);
   }
 
-  escapeHatchCaller (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ESCAPE_HATCH_CALLER)
+  escapeHatchCaller(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ESCAPE_HATCH_CALLER);
   }
 
-  escapeHatchDestination (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.ESCAPE_HATCH_DESTINATION)
+  escapeHatchDestination(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.ESCAPE_HATCH_DESTINATION);
   }
 
-  other (): Wallet {
-    return this._getActor(WALLET_USER_INDEXES.OTHER)
+  other(): Wallet {
+    return this._getActor(WALLET_USER_INDEXES.OTHER);
   }
 
-  anyone (): Wallet {
-    return this.other()
+  anyone(): Wallet {
+    return this.other();
   }
 
-  others (cnt: number): Wallet[] {
+  others(cnt: number): Wallet[] {
     if (cnt < 0) {
-      throw new Error(`Invalid cnt: ${cnt}`)
+      throw new Error(`Invalid cnt: ${cnt}`);
     }
-    return this.wallets.slice(WALLET_USER_INDEXES.OTHER, WALLET_USER_INDEXES.OTHER + cnt)
+    return this.wallets.slice(
+      WALLET_USER_INDEXES.OTHER,
+      WALLET_USER_INDEXES.OTHER + cnt
+    );
   }
 
   // Actual logic of fetching the wallet
-  private _getActor (index: number): Wallet {
+  private _getActor(index: number): Wallet {
     if (index < 0) {
-      throw new Error(`Invalid index: ${index}`)
+      throw new Error(`Invalid index: ${index}`);
     }
-    const account = this.wallets[index]
+    const account = this.wallets[index];
     if (!account) {
-      throw new Error(`Account ID ${index} could not be loaded`)
+      throw new Error(`Account ID ${index} could not be loaded`);
     }
-    return account
+    return account;
   }
 }

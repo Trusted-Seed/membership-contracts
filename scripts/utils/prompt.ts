@@ -1,18 +1,18 @@
-import prompts from 'prompts'
-import { log } from './logging'
+import prompts from "prompts";
+import { log } from "./logging";
 
 export const confirmOK = async (): Promise<any> =>
   await prompts({
-    type: 'confirm',
-    name: 'ok',
-    message: 'Are you sure you want to proceed?',
-    initial: true
-  })
+    type: "confirm",
+    name: "ok",
+    message: "Are you sure you want to proceed?",
+    initial: true,
+  });
 
 export const promptForConfirmation = async (): Promise<any> => {
-  const { ok } = await confirmOK()
+  const { ok } = await confirmOK();
   if (!ok) {
-    log.info('\nOperation aborted, exiting...')
-    process.exit(0)
+    log.info("\nOperation aborted, exiting...");
+    process.exit(0);
   }
-}
+};

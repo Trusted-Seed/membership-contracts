@@ -3,7 +3,8 @@ module.exports = {
     browser: true,
     es2021: true
   },
-  extends: 'standard-with-typescript',
+  extends: ['standard-with-typescript', 'prettier'],
+  plugins: ['prettier'],
   overrides: [
     {
       files: ["./hardhat.config.ts"]
@@ -15,7 +16,7 @@ module.exports = {
     project: ['./tsconfig.json']
   },
   rules: {
-    "semi": 0,
+    "prettier/prettier": ["error"],
     "@typescript-eslint/strict-boolean-expressions": 0,
     "@typescript-eslint/no-namespace": "off",
     "no-new": 0,

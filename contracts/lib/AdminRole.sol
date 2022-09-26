@@ -7,7 +7,8 @@ contract AdminRole is Initializable, OwnableUpgradeable {
     mapping(address => bool) public admins;
 
     modifier onlyAdmin() {
-        if (!admins[msg.sender] || msg.sender == owner()) revert CallerIsNoAdmin();
+        if (!admins[msg.sender] || msg.sender == owner())
+            revert CallerIsNoAdmin();
         _;
     }
 
@@ -16,7 +17,10 @@ contract AdminRole is Initializable, OwnableUpgradeable {
      * Deployer address is an admin by default.
      * @param _accounts An optional list of admin addresses.
      */
-    function __AdminRole_init(address[] calldata _accounts) internal onlyInitializing {
+    function __AdminRole_init(address[] calldata _accounts)
+        internal
+        onlyInitializing
+    {
         __Ownable_init();
         _addAdmins(_accounts);
     }
