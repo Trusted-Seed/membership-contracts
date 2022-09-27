@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {OwnableUpgradeable as Ownable, Initializable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract AdminRole is Initializable, OwnableUpgradeable {
+contract AdminRole is Initializable, Ownable {
     mapping(address => bool) public admins;
 
     modifier onlyAdmin() {
@@ -64,7 +64,7 @@ contract AdminRole is Initializable, OwnableUpgradeable {
      * @return True, if it has the Admin role
      */
     function isAdmin(address _account) external view returns (bool) {
-        return admins[_account];
+        return admins[_account] || _account == owner();
     }
 
     // ================= Internal =================
@@ -75,7 +75,8 @@ contract AdminRole is Initializable, OwnableUpgradeable {
      */
     function _addAdmin(address _account) internal {
         if (_account == address(0)) revert ZeroAddressNotAllowed();
-        if (admins[_account]) revert AccountIsAlreadyAdmin();
+        if (admins[_account] || _account == owner())
+            revert AccountIsAlreadyAdmin();
         admins[_account] = true;
         emit AdminAdded(_account);
     }

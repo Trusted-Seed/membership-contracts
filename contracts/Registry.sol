@@ -27,7 +27,7 @@ contract Registry is IRegistry, AdminRole {
     mapping(address => Contributor) contributors;
 
     modifier onlyMinter() {
-        if (_msgSender() != minterContract) revert SenderMustBeMinter();
+        if (msg.sender != minterContract) revert SenderMustBeMinter();
         _;
     }
 
@@ -251,7 +251,7 @@ contract Registry is IRegistry, AdminRole {
         internal
     {
         if (!accounts.contains(_adr)) revert AccountNotRegistered();
-        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
+        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivatedMember();
 
         contributors[_adr].balance = _pendingBalance;
 
@@ -260,7 +260,7 @@ contract Registry is IRegistry, AdminRole {
 
     function _addPendingBalance(address _adr, uint256 _value) internal {
         if (!accounts.contains(_adr)) revert AccountNotRegistered();
-        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivtedMember();
+        if (tokenContract.balanceOf(_adr) > 0) revert AccountIsActivatedMember();
 
         contributors[_adr].balance += _value;
 
@@ -304,5 +304,5 @@ contract Registry is IRegistry, AdminRole {
     error AddressMustBeNonZero();
     error AccountAlreadyRegistered();
     error AccountNotRegistered();
-    error AccountIsActivtedMember();
+    error AccountIsActivatedMember();
 }

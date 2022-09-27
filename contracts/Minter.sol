@@ -27,7 +27,7 @@ contract Minter is Ownable, IMinter {
     uint256 internal denominatorVal;
 
     modifier onlyBridge() {
-        if (_msgSender() != bridge) revert SenderMustBeBridge();
+        if (msg.sender != bridge) revert SenderMustBeBridge();
         _;
     }
 
