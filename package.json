@@ -53,6 +53,8 @@
     "prettier:check": "prettier-check contracts/**/*.sol test/**/*.ts typechain/*.ts",
     "prettier": "prettier --write contracts/**/*.sol test/**/*.ts typechain/*.ts",
     "size-contracts": "hardhat clean && hardhat compile && hardhat size-contracts",
+    "clear-cache": "rm -rf artifacts/ cache/ typechain/",
+    "coverage": "RUN_COVERAGE=1 hardhat coverage",
     "deploy:minter:void": "hardhat run --network hardhat scripts/deploy/minter/minter.ts",
     "deploy:minter:goerli": "hardhat run --network goerli scripts/deploy/minter/minter.ts",
     "deploy:minter:gnosis": "hardhat run --network gnosis scripts/deploy/minter/minter.ts",
